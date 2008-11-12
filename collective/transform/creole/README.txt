@@ -91,6 +91,22 @@ Let's test all the wiki syntax.
     >>> wiki_text = "use a tilde '~~' to ~**escape"
     >>> self.performTransform(wiki_text)
     "<p>use a tilde '~' to **escape</p>\n"
+
+Let's throw in some non-ascii characters.
+
+    >>> wiki_text = """== En Français
+    ... ça va? ouais. l'hôtel California, Dieu **créa** le ciel et la terre"""
+    >>> self.performTransform(wiki_text)
+    "<h2>En Fran\xc3\xa7ais</h2>\n<p>\xc3\xa7a va? ouais. l'h\xc3\xb4tel California, Dieu <strong>cr\xc3\xa9a</strong> le ciel et la terre</p>\n"
+
+    >>> wiki_text = u"ça va?"
+    >>> self.performTransform(wiki_text)
+    '<p>\xc3\x83\xc2\xa7a va?</p>\n'
+
+    >>> wiki_text = """בְּרֵאש"""
+    >>> self.performTransform(wiki_text)
+    '<p>\xd7\x91\xd6\xb0\xd6\xbc\xd7\xa8\xd6\xb5\xd7\x90\xd7\xa9</p>\n'
+
     
 Inter wiki link can be set up as well.
 

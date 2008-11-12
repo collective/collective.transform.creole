@@ -2,6 +2,11 @@ from Products.PortalTransforms.interfaces import itransform
 from creoleparser.dialects import Creole10
 from creoleparser.core import Parser
 
+def _safe_unicode(text):
+    if not isinstance(text, unicode):
+        text = unicode(text, 'utf-8', 'ignore')
+    return text
+
 
 class CreoleToHtml:
     """Transform to take creole wiki text and turn it into HTML"""
@@ -11,16 +16,25 @@ class CreoleToHtml:
     __name__ = "creole_to_html"
     output = "text/html"
 
-    def __init__(self, name=None, inputs=('text/wiki+creole',), base_url='', interwiki=[]):
-        self.config = {'inputs': inputs, 'base_url': base_url, 'interwiki': interwiki}
+    def __init__(self, name=None, inputs=('text/wiki+creole',), base_url='',
+                 interwiki=[]):
+        self.config = {
+            'inputs': inputs,
+            'base_url': base_url,
+            'interwiki': interwiki
+        }
         self.config_metadata = {
-            'inputs' : ('list', 'Inputs', 'Input(s) MIME type. Change with care.'),
+            'inputs' : ('list', 
+                        'Inputs', 
+                        'Input(s) MIME type. Change with care.'),
             'base_url' : ('string', 
                           'Wiki Link Base URL',
                           'Base URL to use when creating wiki links'),
             'interwiki' : ('list',
                            'Interwiki Base URLs',
-                           'Interwiki names and base URLs on per line separated by pipes (e.g. wikipedia|http://en.wikipedia.org/wiki/).'),
+                           'Interwiki names and base URLs on per line '
+                           'separated by pipes (e.g. '
+                           'wikipedia|http://en.wikipedia.org/wiki/).'),
             }
         if name:
             self.__name__ = name
@@ -47,7 +61,7 @@ class CreoleToHtml:
             no_wiki_monospace=False,
         )
         plone_creole_parser = Parser(dialect=custom_dialect)
-        text = plone_creole_parser(orig)
+        text = plone_creole_parser(_safe_unicode(orig))
         data.setData(text)
         return data
 
